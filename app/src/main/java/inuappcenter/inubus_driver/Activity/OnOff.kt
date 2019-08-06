@@ -8,6 +8,6 @@ class OnOff : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_on_off)
+        setContentView(R.layout.fragment_off)
     }
 }
