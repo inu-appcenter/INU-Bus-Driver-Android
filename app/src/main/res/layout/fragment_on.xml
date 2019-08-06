@@ -37,7 +37,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="84.5dp"
-            android:background="#00fff"
             app:layout_constraintTop_toBottomOf="@+id/tv_on_sub" />
 
         <TextView android:id="@+id/tv_on"
@@ -45,7 +44,6 @@
             android:layout_height="41dp"
             android:text="ON"
             android:textSize="30sp"
-            android:letterSpacing="-0.21sp"
             android:textColor="@color/bright_blue"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
