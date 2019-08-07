@@ -37,4 +37,9 @@ class OnOff : AppCompatActivity() {
 //        finish()
         finishAffinity()
     }
+    fun getGps(start :Boolean){
+        if(start){
+
+        }
+    }
 }
