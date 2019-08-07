@@ -1,40 +1,23 @@
 package inuappcenter.inubus_driver.Fragment
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import inuappcenter.inubus_driver.Activity.OnOff
 import inuappcenter.inubus_driver.R
+import kotlinx.android.synthetic.main.fragment_off.*
+import kotlinx.android.synthetic.main.fragment_off.view.*
+import kotlinx.android.synthetic.main.fragment_off.view.btn_off
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [OffFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [OffFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
-class OffFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    private var listener: OnFragmentInteractionListener? = null
+class OffFragment : Fragment() ,View.OnClickListener{
+    private val fragment = OnFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
         }
     }
 
@@ -42,62 +25,36 @@ class OffFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_off, container, false)
+        val view = inflater.inflate(R.layout.fragment_off, container, false)
+        val route = arguments?.get("route").toString()
+
+        addBundle(route)
+
+        view.tv_route_off.text = route
+        view.btn_off.setOnClickListener(this)
+        view.iv_back.setOnClickListener(this)
+
+        return view
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
-    }
+    override fun onClick(p0: View?) {
+        when (p0){
+           btn_off -> {
+               OnOff().driveStatus(true)
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+               activity?.supportFragmentManager
+                   ?.beginTransaction()
+                   ?.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left)
+                   ?.replace(R.id.content_on_off, fragment)?.commit()
+           }
+            iv_back -> {
+                OnOff().finishOnOff()
+            }
         }
     }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment OffFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            OffFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun addBundle(data : String){
+        val bundle :Bundle = Bundle()
+        bundle.putString("route", data)
+        fragment.arguments = bundle
     }
 }

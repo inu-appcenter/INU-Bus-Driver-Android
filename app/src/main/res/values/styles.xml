@@ -30,4 +30,9 @@
         <item name="android:layout_marginTop">4dp</item>
     </style>
 
+    <style name="statusBarBlue" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:statusBarColor">@color/bright_blue</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
 </resources>
