@@ -47,6 +47,8 @@ class OnFragment : Fragment() ,View.OnClickListener{
 //        val onFragment = OnFragment()
 
         OnOff().driveStatus(false)
+
+
         activity?.supportFragmentManager
             ?.beginTransaction()
             ?.setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_right)

@@ -38,8 +38,8 @@ class OffFragment : Fragment() ,View.OnClickListener{
     }
 
     override fun onClick(p0: View?) {
-        when (p0){
-           btn_off -> {
+//        when (p0){
+//           btn_off -> {
                OnOff().driveStatus(true)
 
                activity?.supportFragmentManager
@@ -47,11 +47,11 @@ class OffFragment : Fragment() ,View.OnClickListener{
                    ?.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left)
                    ?.replace(R.id.content_on_off, fragment)?.commit()
            }
-            iv_back -> {
-                OnOff().finishOnOff()
-            }
-        }
-    }
+//            iv_back -> {
+//                OnOff().finishOnOff()
+//            }
+//        }
+//    }
     private fun addBundle(data : String){
         val bundle :Bundle = Bundle()
         bundle.putString("route", data)
