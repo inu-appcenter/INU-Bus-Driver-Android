@@ -1,9 +1,9 @@
 package inuappcenter.inubus_driver.Activity
 
+//import android.support.v7.app.AppCompatActivity
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.AdapterView
 import android.widget.Toast
@@ -14,7 +14,7 @@ import inuappcenter.inubus_driver.Custom.routeVO
 import inuappcenter.inubus_driver.R
 import kotlinx.android.synthetic.main.activity_select.*
 
-class Select : AppCompatActivity() {
+class Select : androidx.appcompat.app.AppCompatActivity() {
     var routeList:ArrayList<routeVO> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
