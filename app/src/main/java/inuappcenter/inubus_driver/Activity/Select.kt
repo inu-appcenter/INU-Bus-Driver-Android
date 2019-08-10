@@ -39,9 +39,10 @@ class Select : androidx.appcompat.app.AppCompatActivity() {
         list_view_select.onItemClickListener = AdapterView.OnItemClickListener{ parent, v, position, id ->
             // get item
             Log.d("selected item",routeList.get(position).title)
-            val intentOnOff = Intent(applicationContext, OnOff::class.java)
+            val intentOnOff = Intent(applicationContext, Off::class.java)
             intentOnOff.putExtra("route", routeList.get(position).title.toString())
             startActivity(intentOnOff)
+            overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }
 
     }
