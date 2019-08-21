@@ -30,9 +30,16 @@
         <item name="android:layout_marginTop">4dp</item>
     </style>
 
+    <style name="TextThemeDialogButton" parent="@android:style/Widget.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@color/bright_blue</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
     <style name="statusBarBlue" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:statusBarColor">@color/bright_blue</item>
-        <item name="android:windowLightStatusBar">false</item>
     </style>
 
 </resources>
