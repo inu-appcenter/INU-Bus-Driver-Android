@@ -3,20 +3,13 @@ package inuappcenter.inubus_driver.Activity
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import inuappcenter.inubus_driver.Custom.CustomDialogTwoButton
 import inuappcenter.inubus_driver.R
 import kotlinx.android.synthetic.main.activity_on_off.*
-import kotlinx.android.synthetic.main.dialog_two_button.*
-import kotlinx.android.synthetic.main.dialog_two_button.view.*
 
 class OnOff : AppCompatActivity() {
-    var start = false
-    private lateinit var view : ViewGroup
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,39 +20,25 @@ class OnOff : AppCompatActivity() {
         tv_route_on.text = route
 
         btn_off.setOnClickListener {
-            if(!start){
-                start = true
-
-                val dialog = CustomDialogTwoButton(this,
-                    "운행모드를 시작하시겠습니까?\n"+"\n" +
+            val dialog = CustomDialogTwoButton(this,
+                "운행모드를 시작하시겠습니까?\n"+"\n" +
                         "확인 버튼을 누르면 버스 위치추적이 시작됩니다.")
-//                dialog.setDialogText("운행모드를 시작하시겠습니까?\n" +
-//                        "확인 버튼을 누르면 버스 위치추적이 시작됩니다.")
-                dialog.show()
-
-                val view = layoutInflater.inflate(R.layout.dialog_two_button,null)
-
-                view.btn_dialog_ok.setOnClickListener {
-                    Log.d("click check","on btn clicked")
+            dialog.show()
+            dialog.setOnOkButtonClickListener(object : CustomDialogTwoButton.OnOkButtonClickListener {
+                override fun onClick() {
                     setLayout()
-                    dialog.dismiss()
                 }
-
-//                dialog.setOnOkButtonClickListener(object : CustomDialogTwoButton.OnOkButtonClickListener {
-//                    override fun onClick() {
-//                        setLayout(start)
-//                    }
-//                })
-            }
-            else{
-                val dialogOff = CustomDialogTwoButton(this,
-                    "셔틀버스 운행 중입니다.\n"+"\n"+"운행모드를 해제하시겠습니까?\n확인 버튼을 누르면 운행이 종료됩니다.")
-                dialogOff.show()
-                view.btn_dialog_ok.setOnClickListener {
-                    onBackPressed()
-                    dialogOff.dismiss()
+            })
+        }
+        btn_on.setOnClickListener {
+            val dialogOff = CustomDialogTwoButton(this,
+                "셔틀버스 운행 중입니다.\n"+"\n"+"운행모드를 해제하시겠습니까?\n확인 버튼을 누르면 운행이 종료됩니다.")
+            dialogOff.show()
+            dialogOff.setOnOkButtonClickListener(object : CustomDialogTwoButton.OnOkButtonClickListener{
+                override fun onClick() {
+                    finish()
                 }
-            }
+            })
         }
         iv_back.setOnClickListener {
             super.onBackPressed()
