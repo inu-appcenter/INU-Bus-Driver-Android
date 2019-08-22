@@ -11,6 +11,7 @@ import android.text.style.StyleSpan
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import inuappcenter.inubus_driver.Custom.CustomDialogTwoButton
+import inuappcenter.inubus_driver.GPS.FusedLocationProvider
 import inuappcenter.inubus_driver.R
 import kotlinx.android.synthetic.main.activity_on_off.*
 
@@ -34,6 +35,7 @@ class OnOff : AppCompatActivity() {
             dialog.setOnOkButtonClickListener(object : CustomDialogTwoButton.OnOkButtonClickListener {
                 override fun onClick() {
                     setLayout()
+                    FusedLocationProvider(applicationContext).startLocationUpdates()
                 }
             })
         }
