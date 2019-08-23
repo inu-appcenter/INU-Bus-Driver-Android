@@ -1,21 +1,29 @@
 package inuappcenter.inubus_driver.Activity
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import inuappcenter.inubus_driver.Custom.CustomDialogOneButton
 import inuappcenter.inubus_driver.Custom.CustomDialogTwoButton
 import inuappcenter.inubus_driver.GPS.FusedLocationProvider
 import inuappcenter.inubus_driver.R
 import kotlinx.android.synthetic.main.activity_on_off.*
 
 class OnOff : AppCompatActivity() {
+
+    lateinit var gps : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +35,17 @@ class OnOff : AppCompatActivity() {
         tv_route_off.text = route
         tv_route_on.text = route
 
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            val dialogGPS = CustomDialogOneButton(this)
+            dialogGPS.show()
+            dialogGPS.setOnOkButtonClickListener(object : CustomDialogOneButton.OnOkButtonClickListener{
+                override fun onClick() {
+                    startActivityForResult(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS),11)
+                }
+            })
+        }
+
         btn_off.setOnClickListener {
             val dialog = CustomDialogTwoButton(this,
                 "운행모드를 시작하시겠습니까?\n"+"\n" +
@@ -35,16 +54,18 @@ class OnOff : AppCompatActivity() {
             dialog.setOnOkButtonClickListener(object : CustomDialogTwoButton.OnOkButtonClickListener {
                 override fun onClick() {
                     setLayout()
-                    FusedLocationProvider(applicationContext).startLocationUpdates()
+                    getGps()
                 }
             })
         }
+
         btn_on.setOnClickListener {
             val dialogOff = CustomDialogTwoButton(this,
                 "셔틀버스 운행 중입니다.\n운행모드를 해제하시겠습니까?\n\n확인 버튼을 누르면 \n운행이 종료됩니다.")
             dialogOff.show()
             dialogOff.setOnOkButtonClickListener(object : CustomDialogTwoButton.OnOkButtonClickListener{
                 override fun onClick() {
+                    FusedLocationProvider(applicationContext).stoplocationUpdates()
                     finish()
                 }
             })
@@ -55,36 +76,37 @@ class OnOff : AppCompatActivity() {
     }
 
     fun setLayout(){
-            content_on_off.setBackgroundResource(R.color.bright_blue)
+        content_on_off.setBackgroundResource(R.color.bright_blue)
 
-            if (Build.VERSION.SDK_INT >= 21) {
-                // 21 버전 이상일 때
-                this.window?.statusBarColor = Color.parseColor("#0061f4")
-            }
+        if (Build.VERSION.SDK_INT >= 21) {
+            // 21 버전 이상일 때
+            this.window?.statusBarColor = Color.parseColor("#0061f4")
+        }
 
         tv_title.setTextColor(Color.WHITE)
         setTitleTV("운행을 종료하시겠습니까?",true)
 
-            tv_off_sub.visibility = View.INVISIBLE
-            tv_on_sub.visibility = View.VISIBLE
+        tv_off_sub.visibility = View.INVISIBLE
+        tv_on_sub.visibility = View.VISIBLE
 
-            tv_route_off.visibility = View.INVISIBLE
-            tv_route_on.visibility = View.VISIBLE
+        tv_route_off.visibility = View.INVISIBLE
+        tv_route_on.visibility = View.VISIBLE
 
-            tv_off.visibility = View.INVISIBLE
-            tv_on.visibility = View.VISIBLE
+        tv_off.visibility = View.INVISIBLE
+        tv_on.visibility = View.VISIBLE
 
-            btn_off.visibility = View.INVISIBLE
-            btn_on.visibility = View.VISIBLE
+        btn_off.visibility = View.INVISIBLE
+        btn_on.visibility = View.VISIBLE
 
-            iv_back.visibility = View.INVISIBLE
+        iv_back.visibility = View.INVISIBLE
     }
 
-    override fun onBackPressed() {
-    }
+    override fun onBackPressed() {}
 
-    fun getGps(start :Boolean){
-
+    fun getGps(){
+        FusedLocationProvider(applicationContext).startLocationUpdates()
+        gps = FusedLocationProvider(applicationContext).locationData
+        Log.d("on activity gps",gps)
     }
     fun setTitleTV(title : String, on : Boolean){
         val builder = SpannableStringBuilder(title)

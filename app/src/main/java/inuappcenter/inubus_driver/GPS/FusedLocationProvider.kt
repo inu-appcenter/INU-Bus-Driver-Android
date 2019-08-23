@@ -19,6 +19,7 @@ class FusedLocationProvider(private val mContext: Context) : GoogleApiClient.Con
 
     private val TAG = "Get Location Test"
 
+    var locationData : String = "nothing"
     private lateinit var mGoogleApiClient: GoogleApiClient
     lateinit var mLocation: Location
     private lateinit var mLastLocation : Location
@@ -27,51 +28,22 @@ class FusedLocationProvider(private val mContext: Context) : GoogleApiClient.Con
     private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
     private var fusedLocationClient= LocationServices.getFusedLocationProviderClient(mContext)
 
-//    private fun initLocation(){
-//        // 권한 여부 확인
-//        if (ActivityCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_FINE_LOCATION)
-//                !=PackageManager.PERMISSION_GRANTED
-//            && ActivityCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_COARSE_LOCATION)
-//                !=PackageManager.PERMISSION_GRANTED){
-//            return
-//        }
-//        //location 이 null 일 경우 - 기기 위치 비활성화 중
-//        fusedLocationClient.lastLocation.addOnSuccessListener {
-//            location ->
-//            if (location == null){
-//                Log.d(TAG,"location get fail")
-//            }else{
-//                Log.d(TAG,"${location.latitude},${location.longitude}")
-//            }
-//        }
-//            .addOnFailureListener {
-//                Log.e(TAG,"location error is ${it.message}")
-//                it.printStackTrace()
-//            }
-//    }
-
     override fun onLocationChanged(location: Location?) {
         if (location != null) {
             mLastLocation = location
             Log.d("get location","latitude :"+location.latitude+",longitude :"+location.longitude)
-            sendGpsData(location.latitude.toString(),location.longitude.toString())
-        }
-        else{
-            sendGpsData("nothing","nothing")
+
+            locationData = location.latitude.toString()+","+location.longitude.toString()
         }
       }
 
-    public fun sendGpsData(latitude : String, longtitude : String): String {
-        return "$latitude,$longtitude"
-    }
-
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        Log.i(TAG, "Connection failed. Error: " + connectionResult.getErrorCode());
+        Log.i(TAG, "Connection failed. Error: " + connectionResult.getErrorCode())
     }
 
     override fun onConnectionSuspended(p0: Int) {
         Log.d(TAG, "Connection Suspended")
-        mGoogleApiClient.connect();
+        mGoogleApiClient.connect()
     }
 
     override fun onConnected(p0: Bundle?) {
@@ -91,12 +63,8 @@ class FusedLocationProvider(private val mContext: Context) : GoogleApiClient.Con
                 }
             })
     }
-//    private fun isLocationEnabled(): Boolean {
-////        locationManager = getSystemService(mContext.applicationContext.) as LocationManager
-//        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-//    }
 
-    public fun startLocationUpdates() {
+    fun startLocationUpdates() {
         // Create the location request
         mLocationRequest = LocationRequest.create()
         mLocationRequest.run {
@@ -119,9 +87,13 @@ class FusedLocationProvider(private val mContext: Context) : GoogleApiClient.Con
             return
         }
 
-        fusedLocationClient!!.requestLocationUpdates(mLocationRequest,mLocationCallback,
-            Looper.myLooper())
+        fusedLocationClient.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper())
     }
+
+    fun stoplocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(mLocationCallback)
+    }
+
 
     private val mLocationCallback = object : LocationCallback(){
         override fun onLocationResult(locationResult: LocationResult?) {
