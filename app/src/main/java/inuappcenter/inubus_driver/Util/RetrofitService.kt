@@ -13,6 +13,6 @@ interface RetrofitService {
     abstract fun sendGPS(
         @Field("routeId") routeId: String,
         @Field("status") status: Int,
-        @Field("lat") lat: String,
-        @Field("lng") lng: String): Call<JsonObject>
+        @Field("lat") lat: Double,
+        @Field("lng") lng: Double): Call<JsonObject>
 }
