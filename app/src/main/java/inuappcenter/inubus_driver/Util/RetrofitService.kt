@@ -6,13 +6,13 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
-interface Retrofit {
+interface RetrofitService {
 
     @FormUrlEncoded
     @POST("gps")
     abstract fun sendGPS(
-        @Field("status") status: String,
-        @Field("routeId") routeId: Int,
+        @Field("routeId") routeId: String,
+        @Field("status") status: Int,
         @Field("lat") lat: String,
         @Field("lng") lng: String): Call<JsonObject>
 }
