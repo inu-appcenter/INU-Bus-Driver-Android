@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -14,16 +17,30 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.JsonObject
 import inuappcenter.inubus_driver.Custom.CustomDialogOneButton
 import inuappcenter.inubus_driver.Custom.CustomDialogTwoButton
 import inuappcenter.inubus_driver.GPS.FusedLocationProvider
 import inuappcenter.inubus_driver.R
+import inuappcenter.inubus_driver.Util.Config
+import inuappcenter.inubus_driver.Util.RetrofitService
 import kotlinx.android.synthetic.main.activity_on_off.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
 
 class OnOff : AppCompatActivity() {
 
-    lateinit var gps : String
+    var gps : String? = "nothing"
+    lateinit var retrofit : Retrofit
+    private lateinit var route : String
+
+    private lateinit var mDelayHandler : Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,13 +48,23 @@ class OnOff : AppCompatActivity() {
 
         setTitleTV("운행을 시작하시겠습니까?",false)
 
-        val route = intent.getStringExtra("route")
+        mDelayHandler = Handler(Looper.getMainLooper())
+
+        route = intent.getStringExtra("route")
         tv_route_off.text = route
         tv_route_on.text = route
+
+         retrofit = Retrofit.Builder()
+            .baseUrl(Config.serverUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        var fusedLocationProvider = FusedLocationProvider(applicationContext)
 
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             val dialogGPS = CustomDialogOneButton(this)
+            dialogGPS.setCancelable(false)
             dialogGPS.show()
             dialogGPS.setOnOkButtonClickListener(object : CustomDialogOneButton.OnOkButtonClickListener{
                 override fun onClick() {
@@ -54,7 +81,7 @@ class OnOff : AppCompatActivity() {
             dialog.setOnOkButtonClickListener(object : CustomDialogTwoButton.OnOkButtonClickListener {
                 override fun onClick() {
                     setLayout()
-                    getGps()
+                    gpsOnOff(true,fusedLocationProvider)
                 }
             })
         }
@@ -65,7 +92,8 @@ class OnOff : AppCompatActivity() {
             dialogOff.show()
             dialogOff.setOnOkButtonClickListener(object : CustomDialogTwoButton.OnOkButtonClickListener{
                 override fun onClick() {
-                    FusedLocationProvider(applicationContext).stoplocationUpdates()
+                    gpsOnOff(false,fusedLocationProvider)
+                    sendData("0","0",0)
                     finish()
                 }
             })
@@ -103,12 +131,57 @@ class OnOff : AppCompatActivity() {
 
     override fun onBackPressed() {}
 
-    fun getGps(){
-        FusedLocationProvider(applicationContext).startLocationUpdates()
-        gps = FusedLocationProvider(applicationContext).locationData
-        Log.d("on activity gps",gps)
+    fun gpsOnOff(start : Boolean, fusedLocationProvider: FusedLocationProvider ){
+        if (start)
+        {
+            fusedLocationProvider.startLocationUpdates()
+            gps = fusedLocationProvider.locationData
+            setDelayHandler(fusedLocationProvider)
+            Log.d("on activity gps",gps)
+        }else{
+            fusedLocationProvider.stopLocationUpdates()
+            Log.d("on activity gps","stop")
+        }
     }
-    fun setTitleTV(title : String, on : Boolean){
+
+    // handler
+    private fun setDelayHandler(fusedLocationProvider: FusedLocationProvider){
+        mDelayHandler.postDelayed({
+            getGps(fusedLocationProvider)
+        },2*1000)
+    }
+
+    fun getGps(fusedLocationProvider: FusedLocationProvider) {
+        var gpsData : Location? = fusedLocationProvider.mLastLocation
+        Log.w("timer",gpsData.toString())
+
+        if (gpsData != null){
+            sendData(gpsData.latitude.toString(), gpsData.longitude.toString(),1)
+        }
+        setDelayHandler(fusedLocationProvider)
+    }
+
+    private fun sendData(lat : String, lng : String, status : Int){
+
+        var service : RetrofitService = retrofit.create(RetrofitService::class.java)
+
+        service.sendGPS(route.substring(0,2),status,lat,lng).enqueue(object : Callback<JsonObject>{
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Toast.makeText(applicationContext,"통신 에러! 서버 연결을 확인해주세요",Toast.LENGTH_SHORT).show()
+                Log.w("retrofit test failure", "status : $status,$lat,$lng,${route.substring(0,2)}")
+            }
+
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if (response.code() == 200){
+                    Log.w("retrofit test", "status$status$lat$lng$route")
+                }
+            }
+
+        })
+    }
+
+    private fun setTitleTV(title : String, on : Boolean){
         val builder = SpannableStringBuilder(title)
         if (on){
             tv_title.text = ""
@@ -116,5 +189,10 @@ class OnOff : AppCompatActivity() {
         }
         builder.setSpan(StyleSpan(Typeface.BOLD),0,6,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         tv_title.append(builder)
+    }
+
+    override fun onDestroy() {
+        mDelayHandler.removeMessages(0)
+        super.onDestroy()
     }
 }

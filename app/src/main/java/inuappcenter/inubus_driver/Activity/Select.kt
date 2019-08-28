@@ -1,13 +1,11 @@
 package inuappcenter.inubus_driver.Activity
 
-//import android.support.v7.app.AppCompatActivity
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.AdapterView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import inuappcenter.inubus_driver.Custom.ListViewSelectRouteAdapter
@@ -24,31 +22,21 @@ class Select : androidx.appcompat.app.AppCompatActivity() {
 
         makePermission()
         addList()
-//        val rAdapter = RecyclerSelectRouteAdapter(routeList)
         val rAdapter = ListViewSelectRouteAdapter(this,routeList)
 
-         /* item click listener
-            클릭한 값 전달*/
-//        rAdapter.setItemClick(object : RecyclerSelectRouteAdapter.ItemClick {
-//            override fun onClick(view: View, position: Int) {
-//                val intentOnOff = Intent(applicationContext, OnOff::class.java)
-//                intentOnOff.putExtra("route", tv_item_route_title.text)
-//                startActivity(intentOnOff)
-//            }
-//        })
         list_view_select.adapter = rAdapter
         list_view_select.onItemClickListener = AdapterView.OnItemClickListener{ parent, v, position, id ->
             // get item
             Log.d("selected item",routeList.get(position).title)
             val intentOnOff = Intent(applicationContext, OnOff::class.java)
-            intentOnOff.putExtra("route", routeList.get(position).title.toString())
+            intentOnOff.putExtra("route", routeList.get(position).title)
             startActivity(intentOnOff)
             overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }
 
     }
 
-    fun makePermission() {
+    private fun makePermission() {
         val permissionListener = object : PermissionListener {
             override fun onPermissionGranted() {}
 

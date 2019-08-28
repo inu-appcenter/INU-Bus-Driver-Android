@@ -1,34 +1,27 @@
 package inuappcenter.inubus_driver.GPS
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
-import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
-import com.google.android.gms.tasks.OnSuccessListener
 
-class FusedLocationProvider(private val mContext: Context) : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
+class FusedLocationProvider(private val mContext: Context){
 
     private val TAG = "Get Location Test"
 
     var locationData : String = "nothing"
-    private lateinit var mGoogleApiClient: GoogleApiClient
-    lateinit var mLocation: Location
-    private lateinit var mLastLocation : Location
-    private var mLocationRequest: LocationRequest? = null
+//    private lateinit var mGoogleApiClient: GoogleApiClient
+    var mLastLocation : Location? = null
+    internal lateinit var mLocationRequest: LocationRequest
     private val UPDATE_INTERVAL:Long = 10 * 1000  /* 10 secs */
     private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
     private var fusedLocationClient= LocationServices.getFusedLocationProviderClient(mContext)
 
-    override fun onLocationChanged(location: Location?) {
+    fun onLocationChanged(location: Location?) {
         if (location != null) {
             mLastLocation = location
             Log.d("get location","latitude :"+location.latitude+",longitude :"+location.longitude)
@@ -37,32 +30,32 @@ class FusedLocationProvider(private val mContext: Context) : GoogleApiClient.Con
         }
       }
 
-    override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        Log.i(TAG, "Connection failed. Error: " + connectionResult.getErrorCode())
-    }
-
-    override fun onConnectionSuspended(p0: Int) {
-        Log.d(TAG, "Connection Suspended")
-        mGoogleApiClient.connect()
-    }
-
-    override fun onConnected(p0: Bundle?) {
-        if (ActivityCompat.checkSelfPermission(mContext
-                , Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            return}
-        startLocationUpdates()
-
-       fusedLocationClient .getLastLocation()
-            .addOnSuccessListener(Activity(), OnSuccessListener<Location> { location ->
-                // Got last known location. In some rare situations this can be null.
-                if (location != null) {
-                    // Logic to handle location object
-                    mLocation = location
-                }
-            })
-    }
+//    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+//        Log.i(TAG, "Connection failed. Error: " + connectionResult.getErrorCode())
+//    }
+//
+//    override fun onConnectionSuspended(p0: Int) {
+//        Log.d(TAG, "Connection Suspended")
+//        mGoogleApiClient.connect()
+//    }
+//
+//    override fun onConnected(p0: Bundle?) {
+//        if (ActivityCompat.checkSelfPermission(mContext
+//                , Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+//            && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//
+//            return}
+//        startLocationUpdates()
+//
+//       fusedLocationClient .getLastLocation()
+//            .addOnSuccessListener(Activity(), OnSuccessListener<Location> { location ->
+//                // Got last known location. In some rare situations this can be null.
+//                if (location != null) {
+//                    // Logic to handle location object
+//                    mLocation = location
+//                }
+//            })
+//    }
 
     fun startLocationUpdates() {
         // Create the location request
@@ -90,7 +83,9 @@ class FusedLocationProvider(private val mContext: Context) : GoogleApiClient.Con
         fusedLocationClient.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper())
     }
 
-    fun stoplocationUpdates() {
+    fun stopLocationUpdates() {
+        Log.d("disconnect location","test")
+//        mGoogleApiClient.disconnect()
         fusedLocationClient.removeLocationUpdates(mLocationCallback)
     }
 
