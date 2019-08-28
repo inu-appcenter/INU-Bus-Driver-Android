@@ -93,7 +93,7 @@ class OnOff : AppCompatActivity() {
             dialogOff.setOnOkButtonClickListener(object : CustomDialogTwoButton.OnOkButtonClickListener{
                 override fun onClick() {
                     gpsOnOff(false,fusedLocationProvider)
-                    sendData("0","0",0)
+                    sendData(0.toDouble(),0.toDouble(),0)
                     finish()
                 }
             })
@@ -156,12 +156,12 @@ class OnOff : AppCompatActivity() {
         Log.w("timer",gpsData.toString())
 
         if (gpsData != null){
-            sendData(gpsData.latitude.toString(), gpsData.longitude.toString(),1)
+            sendData(gpsData.latitude, gpsData.longitude,1)
         }
         setDelayHandler(fusedLocationProvider)
     }
 
-    private fun sendData(lat : String, lng : String, status : Int){
+    private fun sendData(lat : Double, lng : Double, status : Int){
 
         var service : RetrofitService = retrofit.create(RetrofitService::class.java)
 
