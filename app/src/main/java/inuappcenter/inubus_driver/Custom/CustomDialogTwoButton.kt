@@ -35,7 +35,7 @@ class CustomDialogTwoButton(context : Context?, contents : String?) : Dialog(con
             dismiss()}
     }
 
-    fun setDialogText(text: String?) {
+    private fun setDialogText(text: String?) {
         tv_dialog_contents?.text = text
     }
 

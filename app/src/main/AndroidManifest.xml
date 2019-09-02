@@ -14,7 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.OnOff"/>
+        <activity android:name=".Activity.CarNum"></activity>
+        <activity android:name=".Activity.OnOff" />
         <activity android:name=".Activity.Select" />
         <activity android:name=".Activity.Splash">
             <intent-filter>
