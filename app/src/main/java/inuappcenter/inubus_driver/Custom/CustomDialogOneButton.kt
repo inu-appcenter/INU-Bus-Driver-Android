@@ -10,8 +10,8 @@ import inuappcenter.inubus_driver.R
 import kotlinx.android.synthetic.main.dialog_one_button.*
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class CustomDialogOneButton(context : Context?) : Dialog(context) {
-
+class CustomDialogOneButton(context : Context?, contents : String) : Dialog(context) {
+    private val mTitle: String = contents.toString()
     private var listener : OnOkButtonClickListener? = null
 
     interface OnOkButtonClickListener {
@@ -23,12 +23,17 @@ class CustomDialogOneButton(context : Context?) : Dialog(context) {
         window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setContentView(R.layout.dialog_one_button)
 
+        setDialogText(mTitle)
         btn_one_dialog_ok.setOnClickListener {
             setOnOkButtonClickListener(listener)
             if (listener != null) {
                 listener!!.onClick()
             }
             dismiss()}
+    }
+
+    private fun setDialogText(text: String?) {
+        tv_one_dialog_contents?.text = text
     }
 
     fun setOnOkButtonClickListener(listener: OnOkButtonClickListener?){

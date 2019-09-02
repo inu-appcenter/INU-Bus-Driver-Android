@@ -63,7 +63,7 @@ class OnOff : AppCompatActivity() {
 
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            val dialogGPS = CustomDialogOneButton(this)
+            val dialogGPS = CustomDialogOneButton(this,"GPS가 꺼져있습니다\n\n 확인 버튼을 누르면\n 설정화면으로 이동합니다.")
             dialogGPS.setCancelable(false)
             dialogGPS.show()
             dialogGPS.setOnOkButtonClickListener(object : CustomDialogOneButton.OnOkButtonClickListener{

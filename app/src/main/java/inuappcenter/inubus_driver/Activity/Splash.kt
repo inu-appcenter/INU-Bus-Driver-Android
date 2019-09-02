@@ -21,7 +21,7 @@ class Splash : AppCompatActivity() {
         )
 
         Handler().postDelayed({
-                val intentSplash = Intent(this,Select::class.java)
+                val intentSplash = Intent(this,CarNum::class.java)
                 this.startActivity(intentSplash)
                 this.finish()
         }, SPLASH_DISPLAY_LENGTH.toLong())
